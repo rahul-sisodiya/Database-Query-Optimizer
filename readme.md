@@ -1,4 +1,5 @@
 Database Query Optimizer :
+
 This project is a tool to analyze and improve MongoDB query performance. It provides a simple browser-based interface where you can submit queries, understand how they are executed, and get suggestions to make them faster.
 It focuses on practical debugging — identifying slow queries, detecting missing indexes, and testing optimizations before applying them.
 
@@ -147,9 +148,11 @@ Example Response:
 ---
 
 Comparison with Other Tools :
+
 This project includes features like benchmarking indexes, tracking index history, and system-level profiling, which are not commonly available together in other tools.
 
 ---
 
 Contributing :
+
 Fork the repository, create a branch, make changes, and open a pull request.
