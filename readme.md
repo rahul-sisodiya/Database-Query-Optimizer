@@ -53,6 +53,7 @@ Configuration: dotenv
 ---
 
 Project Structure :
+
 MONGO-OPTIMIZER/
 
 backend/
@@ -82,6 +83,7 @@ Prerequisites:
 • Git
 
 Installation :
+
 git clone https://github.com/rahul-sisodiya/Database-Query-Optimizer.git
 cd Database-Query-Optimizer
 npm install
@@ -90,6 +92,7 @@ npm install
 cd ..
 
 Environment Setup :
+
 MONGODB_URI=mongodb://localhost:27017/your-database-name
 PORT=3000
 
@@ -109,6 +112,7 @@ How It Works :
 ---
 
 System Components :
+
 • Query Analysis API
 • Slow Query Analyzer
 • Index Detector
