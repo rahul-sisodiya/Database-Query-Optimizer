@@ -1,38 +1,54 @@
 const estimatePerformanceGains = (analysis, suggestions) => {
-    const { totalDocsExamined, executionTimeMillis, isFullScan } = analysis;
+    const {
+        totalDocsExamined = 0,
+        nReturned = 1,
+        isFullScan,
+        isBadIndexUsage,
+        isLowSelectivity
+    } = analysis;
 
-    if (suggestions.length === 0) {
+    if (!suggestions || suggestions.length === 0) {
         return {
             expectedTimeReduction: 0,
             expectedDocsReduction: 0,
             confidence: 'Low',
-            reason: 'No index suggestions were provided.'
+            reason: 'No optimization suggestions available.'
         };
     }
 
     let expectedTimeReduction = 0;
     let expectedDocsReduction = 0;
-    let confidence = 'Low';
+    let confidence = 'Medium';
+
+    const ratio = nReturned > 0 ? totalDocsExamined / nReturned : totalDocsExamined;
+    const badIndexUsage = typeof isBadIndexUsage === 'boolean' ? isBadIndexUsage : ratio > 5;
+    const lowSelectivity = typeof isLowSelectivity === 'boolean' ? isLowSelectivity : ratio > 20;
 
     if (isFullScan) {
-        expectedTimeReduction = totalDocsExamined > 1000 ? 90 : 70;
-        expectedDocsReduction = totalDocsExamined > 100 ? 95 : 80;
+        expectedDocsReduction = Math.min(98, Math.log10(totalDocsExamined + 1) * 20);
+        expectedTimeReduction = expectedDocsReduction * 0.9;
         confidence = totalDocsExamined > 1000 ? 'High' : 'Medium';
-    } else if (totalDocsExamined > 100) {
-        expectedTimeReduction = 50;
-        expectedDocsReduction = 60;
-        confidence = 'Medium';
+    } else if (badIndexUsage) {
+        expectedDocsReduction = Math.min(80, Math.log2(ratio + 1) * 15);
+        expectedTimeReduction = expectedDocsReduction * 0.8;
+        confidence = ratio > 50 ? 'High' : 'Medium';
+    } else if (lowSelectivity) {
+        expectedDocsReduction = Math.min(50, Math.log2(ratio + 1) * 10);
+        expectedTimeReduction = expectedDocsReduction * 0.7;
+        confidence = ratio > 20 ? 'Medium' : 'Low';
     } else {
-        expectedTimeReduction = 10;
-        expectedDocsReduction = 20;
-        confidence = 'Medium';
+        expectedDocsReduction = 5;
+        expectedTimeReduction = 5;
+        confidence = 'Low';
     }
 
     return {
-        expectedTimeReduction,
-        expectedDocsReduction,
+        expectedTimeReduction: Math.round(expectedTimeReduction),
+        expectedDocsReduction: Math.round(expectedDocsReduction),
         confidence,
-        reason: isFullScan ? 'Converting from Full Collection Scan (COLLSCAN) to Index Scan (IXSCAN) will significantly improve performance.' : 'Reducing document examination and improving index coverage.'
+        reason: isFullScan
+            ? 'Replacing COLLSCAN with indexed query will drastically reduce scanned documents.'
+            : 'Improving index efficiency and selectivity will reduce scan overhead.'
     };
 };
 

@@ -1,18 +1,19 @@
-const suggestIndexes = (query, options) => {
-    const { sort } = options || {};
+const suggestIndexes = (query, options = {}) => {
+    const { sort } = options;
+
     const queryFields = Object.keys(query);
     const sortFields = sort ? Object.keys(sort) : [];
-
-    const suggestions = [];
 
     const equalityFields = [];
     const rangeFields = [];
 
     for (const field of queryFields) {
         const value = query[field];
+
         if (typeof value === 'object' && value !== null) {
             const keys = Object.keys(value);
-            const rangeOperators = ['$gt', '$lt', '$gte', '$lte', '$ne', '$in'];
+            const rangeOperators = ['$gt', '$lt', '$gte', '$lte', '$ne'];
+
             if (keys.some(k => rangeOperators.includes(k))) {
                 rangeFields.push(field);
             } else {
@@ -23,24 +24,39 @@ const suggestIndexes = (query, options) => {
         }
     }
 
-    const suggestedIndexFields = [...equalityFields, ...sortFields, ...rangeFields];
-    const uniqueFields = Array.from(new Set(suggestedIndexFields));
+    const orderedFields = [
+        ...equalityFields,
+        ...sortFields,
+        ...rangeFields
+    ].filter(f => f !== '_id');
 
-    if (uniqueFields.length > 0) {
-        const indexObj = {};
-        uniqueFields.forEach(f => {
-            indexObj[f] = 1;
-        });
+    const seen = new Set();
+    const finalFields = orderedFields.filter(f => {
+        if (seen.has(f)) return false;
+        seen.add(f);
+        return true;
+    });
 
-        suggestions.push({
-            index: indexObj,
-            type: uniqueFields.length > 1 ? 'Compound' : 'Single-Field',
-            fields: uniqueFields,
-            reason: `Optimizes filtering and sorting for ${uniqueFields.join(', ')}.`
-        });
-    }
+    if (finalFields.length === 0) return [];
 
-    return suggestions;
+    const indexObj = {};
+
+    finalFields.forEach(field => {
+        if (sort && sort[field]) {
+            indexObj[field] = sort[field]; // respect sort direction
+        } else {
+            indexObj[field] = 1;
+        }
+    });
+
+    const type = finalFields.length > 1 ? 'Compound' : 'Single-Field';
+
+    return [{
+        index: indexObj,
+        type,
+        fields: finalFields,
+        reason: `Optimized using ESR rule (Equality → Sort → Range) for fields: ${finalFields.join(', ')}`
+    }];
 };
 
 module.exports = { suggestIndexes };
