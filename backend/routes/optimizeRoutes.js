@@ -1,3 +1,5 @@
+
+
 const express = require('express');
 const router = express.Router();
 const { optimizeQuery, resetIndexes, createIndex } = require('../controllers/optimizeController');

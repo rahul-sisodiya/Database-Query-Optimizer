@@ -1,3 +1,5 @@
+
+
 /**
  * Strict validation for MongoDB query and index requests.
  * Prevents unsafe operations and ensures data consistency.
@@ -68,3 +70,4 @@ const validateIndexRequest = (body) => {
 };
 
 module.exports = { validateQueryRequest, validateIndexRequest };
+
