@@ -2,7 +2,11 @@ let timeChart = null;
         let docsChart = null;
         let previousStats = null;
 
+<<<<<<< HEAD
+        // Initialize empty chart on load
+=======
 
+>>>>>>> a69fd16 (frontend upload)
         window.onload = () => {
             initEmptyChart();
         };
@@ -218,7 +222,11 @@ let timeChart = null;
             document.getElementById('resultsContent').classList.remove('hidden');
             document.getElementById('costCard').classList.remove('hidden');
 
+<<<<<<< HEAD
+            // 1. Score & Stats
+=======
             //  Score and Stats
+>>>>>>> a69fd16 (frontend upload)
             const badge = document.getElementById('scoreBadge');
             badge.textContent = data.cost.score;
             badge.className = 'score-badge score-' + data.cost.rating.toLowerCase();
@@ -236,7 +244,11 @@ let timeChart = null;
             document.getElementById('statEfficiency').textContent = efficiency.toFixed(2) + 'x';
             document.getElementById('statSelectivity').textContent = (selectivityRatio * 100).toFixed(1) + '%';
 
+<<<<<<< HEAD
+            // 2. Execution Stats
+=======
             // Execution Stats
+>>>>>>> a69fd16 (frontend upload)
             document.getElementById('valTime').textContent = data.analysis.executionTimeMillis + 'ms';
             document.getElementById('valScan').textContent = data.analysis.winningPlanStage;
             document.getElementById('valDocs').textContent = data.analysis.totalDocsExamined;
@@ -244,7 +256,11 @@ let timeChart = null;
             document.getElementById('valTotalDocs').textContent = data.totalCollectionDocs;
             document.getElementById('valKeys').textContent = data.analysis.totalKeysExamined;
 
+<<<<<<< HEAD
+            // 3. Issues & Rewards
+=======
             // Issues & Rewards
+>>>>>>> a69fd16 (frontend upload)
             const issuesList = document.getElementById('issuesList');
             let issuesHtml = '';
             
@@ -258,7 +274,11 @@ let timeChart = null;
             
             issuesList.innerHTML = issuesHtml || '<p style="color:var(--success); font-weight:600;">No critical issues detected.</p>'; 
 
+<<<<<<< HEAD
+            // 4. Suggestions
+=======
 
+>>>>>>> a69fd16 (frontend upload)
             const suggCont = document.getElementById('suggestionContent');
             if (data.suggestions.length) {
                 const s = data.suggestions[0];
@@ -303,7 +323,11 @@ let timeChart = null;
                     </button>
                 `;
 
+<<<<<<< HEAD
+                // Add event listener for the apply button
+=======
 
+>>>>>>> a69fd16 (frontend upload)
                 if (!indexAlreadyExists) {
                     document.getElementById('applyIndexBtn').onclick = async () => {
                     const btn = document.getElementById('applyIndexBtn');
